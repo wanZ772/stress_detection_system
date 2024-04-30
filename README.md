@@ -3,6 +3,7 @@
 * Stress Analysis
 ![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Stress%20Analysis.jpg?raw=true)
 
+
 * Component Diagram Theory
 ![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Body%20Temperature%20circuit%20-%20TMP36.png?raw=true)
 
