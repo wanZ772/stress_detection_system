@@ -5,7 +5,7 @@
 
 
 * Component Diagram Theory
-![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Body%20Temperature%20circuit%20-%20TMP36.png?raw=true)
+![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Component Diagram Theory.jpg?raw=true)
 
 * Flowchart
 ![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Body%20Temperature%20circuit%20-%20TMP36.png?raw=true)
