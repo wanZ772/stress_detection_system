@@ -1,7 +1,7 @@
 # Algorithm
 
 * Stress Analysis
-![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Stress%20Analysis.jpg?raw=true)
+![Image](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Stress%20Analysis.jpg?raw=true)
 
 
 * Component Diagram Theory
