@@ -1,126 +1,113 @@
+
 #include <Wire.h>
-#include <SPI.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_MLX90614.h>
+
+
+
+#define OLED_RESET -1
+#define WIDTH 128
+#define HEIGHT 32
+
+Adafruit_MLX90614 temp_sensor = Adafruit_MLX90614();
+
+Adafruit_SSD1306 display(WIDTH, HEIGHT, &Wire, OLED_RESET);
+
+// TwoWire Wire(0);
+
 #include "MAX30102_PulseOximeter.h"
 
+#define REPORTING_PERIOD_MS     1000
 
-#define BPM 1000
-
+// PulseOximeter is the higher level interface to the sensor
+// it offers:
+//  * beat detection reporting
+//  * heart rate calculation
+//  * SpO2 (oxidation level) calculation 
+PulseOximeter pox;
 uint32_t tsLastReport = 0;
+// Callback (registered below) fired when a pulse is detected 
 
-#define screen_width 128
-#define screen_height 64
-#define OLED_RESET 4
+float heart_rate, oxygen_level;
 
 
-PulseOximeter heart_blood;
-Adafruit_MLX90614 temp_sensor = Adafruit_MLX90614();
-// Adafruit_SSD1306 display(screen_width, screen_height, &Wire, OLED_RESET);
-Adafruit_SSD1306 display(OLED_RESET);
-float heart_bpm;
-int blood_oxy;
-void beat() {
-  Serial.print("Beat! -> ");
-  // Serial.println(heart_blood.getHeartRate());
-  // heart_bpm = heart_blood.getHeartRate();
-  // heart_blood.update();
+void onBeatDetected()
+{
+    Serial.print("Display --> ");
+  Serial.println(heart_rate);
 }
-
-void setup() {
-  
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.clearDisplay();
-  // display.getBuffer();
-  display.setTextSize(2);
-  display.setCursor(0, 0);
-  display.println("Please Wait");
-  temp_sensor.begin();
-  Serial.begin(9600);
-  // delay(5000);
-  if (!heart_blood.begin())  {
-    
-    Serial.println("failed");
-    for(;;);
-  } else  {
-    Serial.println("ok");
-  }
-  display.clearDisplay();
-  heart_blood.setIRLedCurrent(MAX30102_LED_CURR_7_6MA);
-  heart_blood.setOnBeatDetectedCallback(beat);
-  
-
-
-
-}
-
-void loop() {
-  // double heart_bpm = get_beat();
-  // put your main code here, to run repeatedly:
-
-
-  // display.print("Hello World");
-  // display.display();
-  // display.clearDisplay();
-
-  heart_blood.update();
-  if (millis() - tsLastReport > BPM) {
-        // display.clearDisplay();
-        Serial.print("Heart rate:");
-        Serial.println(heart_blood.getHeartRate());
-        // display.write(heart_blood.getHeartRate());
-        // display.display();
-        // delay(500);
-        // display.clearDisplay();
-        // display.display();
-        // delay(1000);
-        // Serial.print("SpO2:");
-        // Serial.print(heart_blood.getSpO2());
-        // Serial.println("%");
-        // Serial.display();
-        // delay(2000);
-        // display.clearDisplay();
-        tsLastReport = millis();
-   
-
+ 
+void setup()
+{
+    Serial.begin(115200);
+    Serial.print("Initializing..");
+    delay(3000);
+    // Initialize the PulseOximeter instance
+    if (!pox.begin()) {
+        Serial.println("FAILED");
+        for(;;);
+    } else {
+        Serial.println("SUCCESS");
     }
-  
-  // heart_blood.resume();
-  // show_display();
+
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+      Serial.println("display error");
+    } else  {
+      Serial.println("display on!");
+      display.clearDisplay();
+    }
+    
+    if (!temp_sensor.begin()) {
+      Serial.println("temp sensor error");
+    } else  {
+      Serial.println("Temp sensor on!");
+    }
+    // The default current for the IR LED is 50mA and is changed below
+    pox.setIRLedCurrent(MAX30102_LED_CURR_7_6MA);
+    // Register a callback for the beat detection
+    pox.setOnBeatDetectedCallback(onBeatDetected);
 }
-
-double get_beat() {
-  
-  heart_blood.resume();
-  if (millis() - tsLastReport > BPM) {
+ 
+void loop()
+{
+    // Make sure to call update as fast as possible
+    pox.update();
+   // long irValue = pox.getHeartRate();
+    // Asynchronously dump heart rate and oxidation levels to the serial
+    // For both, a value of 0 means "invalid"
+    if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
+      display.clearDisplay();
         Serial.print("Heart rate:");
-        Serial.print(heart_blood.getHeartRate());
+        Serial.print(pox.getHeartRate());
         Serial.print("bpm / SpO2:");
-        Serial.print(heart_blood.getSpO2());
-        Serial.print("%\n");
+        Serial.print(pox.getSpO2());
+        Serial.print("%");
 
+        heart_rate = pox.getHeartRate();
+        oxygen_level = pox.getSpO2();
+
+        display.setCursor(0, 0);
+        display.setTextColor(WHITE);
+        display.setTextSize(1);
+
+        display.print("Body Temp: ");
+        display.print(temp_sensor.readObjectTempC());
+        display.println(" C");
+
+        display.print("Heart Rate: ");
+        display.print(heart_rate);
+        display.println("BPM");
+
+        display.print("Blood Oxy: ");
+        display.print(oxygen_level);
+        display.println("%");
+
+        display.display();
+        
+ // if (irValue < 70)
+   // Serial.print(",  No finger?");
+    Serial.println();
          
         tsLastReport = millis();
-        heart_blood.update();
-        return heart_blood.getHeartRate();
     }
-}
-
-void show_display() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.print("Body temp: ");
-  display.println(temp_sensor.readObjectTempC());
-
-  // display.setCursor(1,1);
-  // display.print("Heart Beat: ");
-  // display.println(heart_bpm);
-  // display.setCursor(2,2);
-  display.print("Blood Oxy: ");
-  display.print(heart_blood.getSpO2());
-  display.println("%");
-  display.display();
 }
