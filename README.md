@@ -19,7 +19,7 @@
 # Code Snipped
 ## Libraries
 * Import All needed libraries
-![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/code%20snipped/libraries.png.png?raw=true)
+![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/code%20snipped/libraries.png?raw=true)
 
 ## Variables and Classes
 * Declare all variables and classes
