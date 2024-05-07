@@ -2,32 +2,20 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_MLX90614.h>
-
+#include "MAX30102_PulseOximeter.h"
 
 
 #define OLED_RESET -1
 #define WIDTH 128
 #define HEIGHT 32
+#define REPORTING_PERIOD_MS     1000
 
 Adafruit_MLX90614 temp_sensor = Adafruit_MLX90614();
 
 Adafruit_SSD1306 display(WIDTH, HEIGHT, &Wire, OLED_RESET);
-
-// TwoWire Wire(0);
-
-#include "MAX30102_PulseOximeter.h"
-
-#define REPORTING_PERIOD_MS     1000
-
-// PulseOximeter is the higher level interface to the sensor
-// it offers:
-//  * beat detection reporting
-//  * heart rate calculation
-//  * SpO2 (oxidation level) calculation 
 PulseOximeter pox;
-uint32_t tsLastReport = 0;
-// Callback (registered below) fired when a pulse is detected 
 
+uint32_t tsLastReport = 0;
 float heart_rate, oxygen_level, old_heart_rate = 0, stress_level;
 
 
@@ -42,7 +30,6 @@ void setup()
     Serial.begin(115200);
     Serial.print("Initializing..");
     delay(3000);
-    // Initialize the PulseOximeter instance
     if (!pox.begin()) {
         Serial.println("FAILED");
         for(;;);
@@ -62,19 +49,13 @@ void setup()
     } else  {
       Serial.println("Temp sensor on!");
     }
-    // The default current for the IR LED is 50mA and is changed below
     pox.setIRLedCurrent(MAX30102_LED_CURR_7_6MA);
-    // Register a callback for the beat detection
     pox.setOnBeatDetectedCallback(onBeatDetected);
 }
  
 void loop()
 {
-    // Make sure to call update as fast as possible
     pox.update();
-   // long irValue = pox.getHeartRate();
-    // Asynchronously dump heart rate and oxidation levels to the serial
-    // For both, a value of 0 means "invalid"
     if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
       display.clearDisplay();
         Serial.print("Heart rate:");
@@ -116,8 +97,7 @@ void loop()
 
         display.display();
         
- // if (irValue < 70)
-   // Serial.print(",  No finger?");
+
     Serial.println();
          
         tsLastReport = millis();

@@ -17,7 +17,15 @@
 
 
 # Code Snipped
-## Body Temperature Sensor
-* TMP36
+## Libraries
+* Import All needed libraries
+![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/code%20snipped/libraries.png.png?raw=true)
 
-![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/Body%20Temperature%20Code%20Snipped%20-%20TMP36.png?token=GHSAT0AAAAAACRRUN5SS32X4RSQIWBDLNDGZRSIXOA)
+## Variables and Classes
+* Declare all variables and classes
+![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/code%20snipped/variables_and_classes.png?raw=true)
+
+## Component Initialization and Setups
+* Initialize and setup all sensors, and OLED Screen
+
+![alt text](https://raw.githubusercontent.com/wanZ772/stress_detection_system/master/documentation/code%20snipped/component_initialization_and_setups.png?raw=true)
