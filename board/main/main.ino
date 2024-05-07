@@ -28,7 +28,7 @@ PulseOximeter pox;
 uint32_t tsLastReport = 0;
 // Callback (registered below) fired when a pulse is detected 
 
-float heart_rate, oxygen_level;
+float heart_rate, oxygen_level, old_heart_rate = 0, stress_level;
 
 
 void onBeatDetected()
@@ -84,6 +84,7 @@ void loop()
         Serial.print("%");
 
         heart_rate = pox.getHeartRate();
+        old_heart_rate = heart_rate;
         oxygen_level = pox.getSpO2();
 
         display.setCursor(0, 0);
@@ -100,6 +101,17 @@ void loop()
 
         display.print("Blood Oxy: ");
         display.print(oxygen_level);
+        display.println("%");
+
+
+        if (heart_rate > old_heart_rate)  {
+          stress_level = heart_rate - old_heart_rate;
+        } else  {
+          stress_level = old_heart_rate - heart_rate;
+        }
+
+        display.print("Stress Lvl: ");
+        display.print(stress_level);
         display.println("%");
 
         display.display();
